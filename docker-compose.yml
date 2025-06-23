@@ -8,5 +8,5 @@ services:
     volumes:
       - .:/app
     env_file:
-      - .env
+      - DISCORD_TOKEN
     restart: unless-stopped
