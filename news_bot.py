@@ -44,7 +44,6 @@ FACTS = [
     "Sloths can hold their breath longer than dolphins, up to 40 minutes.",
     "The word 'nerd' was first coined by Dr. Seuss in 1950.",
     "Venus rotates in the opposite direction to most planets in our solar system.",
-    # ...add more as desired...
 ]
 
 # Pre-generated story templates (placeholders: {time_phrase}, {username})
@@ -69,7 +68,6 @@ STORY_TEMPLATES = [
     "At {time_phrase}, {username} discovered a new species of mushroom in the city park.",
     "Today at {time_phrase}, {username} hosted a charity run that attracted hundreds of participants.",
     "At {time_phrase}, {username} repaired a historic clock tower mechanism single-handedly.",
-    # ...add more as desired...
 ]
 
 # Logging configuration
@@ -155,6 +153,10 @@ async def play_news_bulletin():
             while vc_conn.is_playing():
                 await asyncio.sleep(0.1)
 
+            # ─── NEW SLEEP TO AVOID CUT-OFF ─────────────────────────
+            logging.info("Pausing 5 seconds to let the sentence finish…")
+            await asyncio.sleep(5)
+
             await vc_conn.disconnect()
             logging.info("Finished news bulletin and disconnected.")
         except Exception as e:
@@ -169,8 +171,7 @@ async def on_ready():
     scheduler.add_job(play_news_bulletin, CronTrigger(minute=0))
     scheduler.start()
     logging.info("Scheduled news bulletins on the hour.")
-    # initial test
-    logging.info("Running first bulletin now for testing…")
+    logging.info("Running initial bulletin now for testing…")
     await play_news_bulletin()
 
 client.run(TOKEN)
