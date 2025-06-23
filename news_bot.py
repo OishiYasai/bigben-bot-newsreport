@@ -9,6 +9,7 @@ from gtts import gTTS
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 from dotenv import load_dotenv
+from discord import FFmpegPCMAudio, PCMVolumeTransformer
 
 # Load environment variables
 load_dotenv()
@@ -18,7 +19,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 CHIME_PATH = "chime.mp3"      # your news-style chime
 TIME_TTS_PATH = "time.mp3"    # generated TTS for the time
 NEWS_TTS_PATH = "news.mp3"    # generated TTS for the additional item
-
+TTS_VOLUME = 0.6
 # Timezone for Luxembourg
 LUX_TIMEZONE = pytz.timezone("Europe/Luxembourg")
 
@@ -144,12 +145,17 @@ async def play_news_bulletin():
                 await asyncio.sleep(0.1)
             await asyncio.sleep(0.5)
 
-            vc_conn.play(discord.FFmpegPCMAudio(TIME_TTS_PATH))
+            source = FFmpegPCMAudio(TIME_TTS_PATH)
+            player = PCMVolumeTransformer(source, volume=TTS_VOLUME)
+            
+            vc_conn.play(player)
             while vc_conn.is_playing():
                 await asyncio.sleep(0.1)
             await asyncio.sleep(0.5)
 
-            vc_conn.play(discord.FFmpegPCMAudio(NEWS_TTS_PATH))
+            source2 = FFmpegPCMAudio(NEWS_TTS_PATH)
+            player2 = PCMVolumeTransformer(source2, volume=TTS_VOLUME)
+            vc_conn.play(player2)
             while vc_conn.is_playing():
                 await asyncio.sleep(0.1)
 
